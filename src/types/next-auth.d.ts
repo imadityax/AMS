@@ -4,11 +4,12 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string; // add id to session.user
+      role?: "SuperAdmin" | "Admin" | "Manager" | "TechLead" | "Employee";
     } & DefaultSession["user"];
   }
 
   interface User {
     id: string;
-    role?: "Admin" | "Manager" | "Employee"; // optional if you track roles
+    role?: "SuperAdmin" | "Admin" | "Manager" | "TechLead" | "Employee";
   }
 }

@@ -20,10 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div>
+        <Providers>
           <Navigation />
-             <Providers>{children}</Providers>
-        </div>
+          {children}
+        </Providers>
       </body>
     </html>
   );

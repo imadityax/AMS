@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // GET all users (with hierarchy)
-// GET all users (with hierarchy)
 export async function GET() {
   try {
     const users = await prisma.user.findMany({
@@ -17,12 +16,15 @@ export async function GET() {
       role: u.role,
       managerId: u.managerId,
       managerName: u.manager ? u.manager.name : null,
+      position: (u as any).position || null,
+      department: (u as any).department || null,
     }));
 
-    return NextResponse.json({ users: formatted });
+    return NextResponse.json(formatted);
   } catch (error: any) {
+    console.error("Error fetching users:", error);
     return NextResponse.json(
-      { users: [], error: error.message },
+      [],
       { status: 500 }
     );
   }
@@ -51,18 +53,23 @@ export async function POST(req: Request) {
       );
     }
 
+    console.log("Creating user:", body);
+
     const user = await prisma.user.create({
       data: {
-        name: body.name,
         email: body.email,
-        password: body.password, // ⚠️ hash later with bcrypt
         role: body.role,
         managerId: body.managerId || null,
+        ...(body.position && { position: body.position }),
+        ...(body.department && { department: body.department }),
       },
     });
 
+    console.log("User created:", user);
+
     return NextResponse.json(user);
   } catch (error: any) {
+    console.error("Error creating user:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
