@@ -26,6 +26,12 @@ const authOptions: NextAuthOptions = {
     strategy: "database", // Use database sessions with Prisma adapter
   },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
     async session({ session, user }) {
       if (user && session.user) {
         session.user.id = user.id;

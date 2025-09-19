@@ -22,6 +22,7 @@ import 'reactflow/dist/style.css';
 
 import HierarchyNode from './HierarchyNode';
 import { HierarchyUser, HierarchyNode as HierarchyNodeType, HierarchyEdge } from '@/types/hierarchy';
+import { canManageUser, UserRole } from '@/lib/accessControl';
 
 interface HierarchyFlowProps {
     users: HierarchyUser[];
@@ -29,6 +30,7 @@ interface HierarchyFlowProps {
     onUserEdit?: (user: HierarchyUser) => void;
     onUserDelete?: (userId: string) => void;
     onHierarchyChange?: (userId: string, managerId?: string) => void;
+    currentUser?: { id: string; role: UserRole };
 }
 
 const nodeTypes: NodeTypes = {
@@ -43,26 +45,35 @@ const HierarchyFlow = ({
     onUserEdit,
     onUserDelete,
     onHierarchyChange,
+    currentUser,
 }: HierarchyFlowProps) => {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
     // Convert users to nodes
     const initialNodes: Node[] = useMemo(() => {
-        return users.map((user, index) => ({
-            id: user.id,
-            type: 'hierarchyNode',
-            position: calculateNodePosition(user, users, index),
-            data: {
-                user,
-                onEdit: onUserEdit,
-                onDelete: onUserDelete,
-                onSelect: (selectedUser: HierarchyUser) => {
-                    setSelectedNodeId(selectedUser.id);
-                    onUserSelect?.(selectedUser);
+        return users.map((user, index) => {
+            // Calculate permissions for this user
+            const canEdit = currentUser ? canManageUser(currentUser.role, user.role, currentUser.id, user.id) : false;
+            const canDelete = currentUser ? canManageUser(currentUser.role, user.role, currentUser.id, user.id) : false;
+
+            return {
+                id: user.id,
+                type: 'hierarchyNode',
+                position: calculateNodePosition(user, users, index),
+                data: {
+                    user,
+                    onEdit: onUserEdit,
+                    onDelete: onUserDelete,
+                    onSelect: (selectedUser: HierarchyUser) => {
+                        setSelectedNodeId(selectedUser.id);
+                        onUserSelect?.(selectedUser);
+                    },
+                    canEdit,
+                    canDelete,
                 },
-            },
-        }));
-    }, [users, onUserEdit, onUserDelete, onUserSelect]);
+            };
+        });
+    }, [users, onUserEdit, onUserDelete, onUserSelect, currentUser]);
 
     // Convert user relationships to edges
     const initialEdges: Edge[] = useMemo(() => {

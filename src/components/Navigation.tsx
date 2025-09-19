@@ -13,11 +13,10 @@ import {
   UserCircleIcon
 } from '@heroicons/react/24/outline';
 import { Bell } from 'lucide-react';
-import { signIn, signOut , useSession} from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 const Navigation = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const router = useRouter();
-   const { data: session } = useSession();
+  const { data: session } = useSession();
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
     { name: 'Attendance', href: '/attendance', icon: CalendarIcon },
@@ -27,15 +26,7 @@ const Navigation = () => {
     { name: 'Notifications', href: '/notifications', icon: Bell },
   ];
 
-  const handleLogin = () => {
-    signIn('google'); // 🔑 Google Sign-In
-  };
-
-  const handleLogout = () => {
-    signOut(); // 🔑 Proper logout
-  };
-
- return (
+  return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-16">
         {/* Logo */}

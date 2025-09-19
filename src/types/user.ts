@@ -10,7 +10,6 @@ export interface User {
   managerId?: string | null;
 }
 
-
 export interface CreateUserRequest {
   name: string;
   email: string;

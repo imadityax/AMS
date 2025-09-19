@@ -24,10 +24,12 @@ interface HierarchyNodeData {
     onEdit?: (user: HierarchyUser) => void;
     onDelete?: (userId: string) => void;
     onSelect?: (user: HierarchyUser) => void;
+    canEdit?: boolean;
+    canDelete?: boolean;
 }
 
 const HierarchyNode = memo(({ data, selected }: NodeProps<HierarchyNodeData>) => {
-    const { user, onEdit, onDelete, onSelect } = data;
+    const { user, onEdit, onDelete, onSelect, canEdit, canDelete } = data;
 
     const getRoleIcon = (role: string) => {
         switch (role) {
@@ -90,7 +92,7 @@ const HierarchyNode = memo(({ data, selected }: NodeProps<HierarchyNodeData>) =>
                     </div>
 
                     <div className="flex space-x-1">
-                        {onEdit && (
+                        {onEdit && canEdit && (
                             <Button
                                 size="sm"
                                 variant="ghost"
@@ -103,7 +105,7 @@ const HierarchyNode = memo(({ data, selected }: NodeProps<HierarchyNodeData>) =>
                                 <Edit className="w-3 h-3" />
                             </Button>
                         )}
-                        {onDelete && (
+                        {onDelete && canDelete && (
                             <Button
                                 size="sm"
                                 variant="ghost"
