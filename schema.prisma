@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+  role     Role
+
+  // 🔹 Self-relation for hierarchy
+  managerId String? @db.ObjectId
+  manager   User?   @relation("UserToManager", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employees User[]  @relation("UserToManager")
+
+  // 🔹 Relations
+  tasks  Task[]  @relation("AssignedTasks")
+  leaves Leave[] @relation("UserLeaves")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  status      String // "pending" | "in-progress" | "done"
+
+  // 🔹 Assigned to user
+  assignedToId String? @db.ObjectId
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
+}
+
+model Leave {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  reason    String
+  startDate DateTime
+  endDate   DateTime
+  status    String // "pending" | "approved" | "rejected"
+
+  // 🔹 Leave belongs to user
+  userId String? @db.ObjectId
+  user   User?   @relation("UserLeaves", fields: [userId], references: [id])
+}
+
+enum Role {
+  Admin
+  Manager
+  Employee
+}
