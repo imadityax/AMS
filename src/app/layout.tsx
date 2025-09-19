@@ -2,6 +2,9 @@
 import type { Metadata } from 'next';
 import Navigation from '@/components/Navigation';
 import './globals.css';
+import { SessionProvider } from 'next-auth/react';
+import { Providers } from '@/components/Providers';
+
 
 export const metadata = {
   title: 'Attendance Management',
@@ -19,7 +22,7 @@ export default function RootLayout({
       <body>
         <div>
           <Navigation />
-          {children}
+             <Providers>{children}</Providers>
         </div>
       </body>
     </html>
