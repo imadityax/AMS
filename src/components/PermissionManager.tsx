@@ -195,7 +195,7 @@ const PermissionManager = ({ selectedUser, onPermissionUpdate, currentUserRole =
                 <div>
                     <h3 className="text-lg font-semibold text-gray-900">Permission Management</h3>
                     <p className="text-sm text-gray-600">
-                        Managing permissions for <span className="font-medium">{selectedUser.name}</span>
+                        Managing permissions for <span className="font-medium">{selectedUser.name || selectedUser.email || 'Unknown User'}</span>
                     </p>
                 </div>
                 <Badge className={`${selectedUser.role === 'Admin' ? 'bg-purple-100 text-purple-800' :

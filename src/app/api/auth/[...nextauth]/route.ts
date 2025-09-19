@@ -1,7 +1,17 @@
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+
+// Ensure Prisma client is properly initialized
+if (!prisma) {
+  throw new Error('Prisma client is not initialized');
+}
+
+// Test Prisma connection
+prisma.$connect().catch((error) => {
+  console.error('Failed to connect to database:', error);
+});
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -19,17 +29,22 @@ const authOptions: NextAuthOptions = {
     async session({ session, user }) {
       if (user && session.user) {
         session.user.id = user.id;
-        // Get user role from database
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { role: true, name: true, email: true, image: true }
-        });
+        try {
+          // Get user role from database
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { role: true, name: true, email: true, image: true }
+          });
 
-        if (dbUser) {
-          session.user.role = dbUser.role;
-          session.user.name = dbUser.name;
-          session.user.email = dbUser.email;
-          session.user.image = dbUser.image;
+          if (dbUser) {
+            session.user.role = dbUser.role;
+            session.user.name = dbUser.name;
+            session.user.email = dbUser.email;
+            session.user.image = dbUser.image;
+          }
+        } catch (error) {
+          console.error('Error fetching user data in session callback:', error);
+          // Don't throw error, just continue with basic session data
         }
       }
       return session;
@@ -67,7 +82,7 @@ const authOptions: NextAuthOptions = {
                 }
               });
             }
-            
+
             // Update user info from Google if needed
             await prisma.user.update({
               where: { id: existingUser.id },
@@ -77,7 +92,7 @@ const authOptions: NextAuthOptions = {
                 emailVerified: new Date(),
               }
             });
-            
+
             return true; // Allow sign in
           } else {
             // User doesn't exist - they need to be created by admin first

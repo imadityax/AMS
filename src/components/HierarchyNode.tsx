@@ -81,10 +81,10 @@ const HierarchyNode = memo(({ data, selected }: NodeProps<HierarchyNodeData>) =>
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-3">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                            {user.name.charAt(0).toUpperCase()}
+                            {(user.name || user.email || 'U').charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            <h3 className="font-semibold text-gray-900 text-sm">{user.name}</h3>
+                            <h3 className="font-semibold text-gray-900 text-sm">{user.name || user.email || 'Unknown User'}</h3>
                             <p className="text-xs text-gray-500">{user.position || 'Position'}</p>
                         </div>
                     </div>

@@ -158,7 +158,7 @@ export default function AdminPage() {
   // Convert users to hierarchy format and apply access control
   const allHierarchyUsers: HierarchyUser[] = users.map(user => ({
     id: user.id,
-    name: user.name,
+    name: user.name || user.email || 'Unknown User',
     email: user.email,
     role: user.role,
     managerId: user.managerId,
@@ -405,6 +405,9 @@ export default function AdminPage() {
                       required
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Must match the Google account email they will use to sign in
+                    </p>
                   </div>
 
                   <div>
@@ -512,7 +515,7 @@ export default function AdminPage() {
                         <tr key={user.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                              <div className="text-sm font-medium text-gray-900">{user.name || user.email || 'Unknown User'}</div>
                               <div className="text-sm text-gray-500">{user.email}</div>
                             </div>
                           </td>

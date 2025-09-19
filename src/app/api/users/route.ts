@@ -11,7 +11,6 @@ export async function GET() {
     // Map users into a clean shape
     const formatted = users.map((u) => ({
       id: u.id,
-      name: u.name,
       email: u.email,
       role: u.role,
       managerId: u.managerId,
@@ -37,7 +36,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // Simple validation
-    if (!body.name || !body.email || !body.password || !body.role) {
+    if (!body.email || !body.role) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
