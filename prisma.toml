@@ -1,0 +1,2 @@
+schema = "prisma/schema.prisma"
+seed = "tsx src/prisma/seed.ts"

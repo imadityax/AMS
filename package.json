@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate": "npx prisma generate",
+    "db:push": "cross-env dotenv -e .env npx prisma db push",
+    "db:seed": "cross-env dotenv -e .env npx prisma db seed"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -37,14 +40,13 @@
     "@types/node": "^20.19.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.9.2"
-  },
-  "prisma": {
-    "seed": "ts-node-esm src/prisma/seed.ts"
   }
 }

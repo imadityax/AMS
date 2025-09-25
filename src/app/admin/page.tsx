@@ -63,18 +63,17 @@ export default function AdminPage() {
     );
   }
 
-  // Check if user has admin access (SuperAdmin or Admin only)
-  // if (currentUser.role !== 'SuperAdmin' && currentUser.role !== 'Admin') {
-  //   router.push('/dashboard');
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-  //         <p className="text-gray-600">You do not have permission to access the admin panel.</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (currentUser.role !== 'SuperAdmin' && currentUser.role !== 'Admin') {
+    router.push('/dashboard');
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
+          <p className="text-gray-600">You do not have permission to access the admin panel.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Convert users to hierarchy format and apply access control
   const allHierarchyUsers: HierarchyUser[] = users.map(user => ({

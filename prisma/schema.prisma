@@ -27,9 +27,9 @@ model User {
   tasks           Task[]           @relation("AssignedTasks")
   leaves          Leave[]          @relation("UserLeaves")
   userPermissions UserPermission[] @relation("UserPermissions")
-
-  accounts Account[]
-  sessions Session[]
+  attendances     Attendance[]
+  accounts        Account[]
+  sessions        Session[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -84,6 +84,33 @@ model UserPermission {
   createdAt DateTime @default(now())
 
   @@unique([userId, permissionId])
+}
+
+model Attendance {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  date        DateTime
+  checkIn     DateTime
+  checkOut    DateTime?
+  status      AttendanceStatus @default(Present)
+  hoursWorked Float?
+
+  // 🔹 Relations
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+enum AttendanceStatus {
+  Present
+  Absent
+  Late
+  HalfDay
+  Holiday
+  SickLeave
 }
 
 enum Role {
