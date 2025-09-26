@@ -9,8 +9,8 @@ datasource db {
 
 model User {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String?   @unique
+  name          String
+  email         String    @unique
   emailVerified DateTime?
   image         String?
   password      String?
@@ -18,34 +18,60 @@ model User {
   position      String?
   department    String?
 
-  // 🔹 Self-relation for hierarchy
-  managerId String? @db.ObjectId
-  manager   User?   @relation("UserToManager", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  employees User[]  @relation("UserToManager")
-
-  // 🔹 Relations
-  tasks           Task[]           @relation("AssignedTasks")
+  // 🔹 Multiple managers via junction table
+  managers        UserManager[]    @relation("UserManagers")
+  directReports   UserManager[]    @relation("ManagerUsers")
+  
+  // 🔹 Task relations - ADD THESE
+  assignedTasks    Task[]           @relation("AssignedTasks")
+  createdTasks     Task[]           @relation("CreatedTasks") // ADD THIS LINE
+  
+  // 🔹 Other relations
   leaves          Leave[]          @relation("UserLeaves")
   userPermissions UserPermission[] @relation("UserPermissions")
   attendances     Attendance[]
   accounts        Account[]
   sessions        Session[]
 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserManager {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String @db.ObjectId
+  managerId String @db.ObjectId
+
+  // Relations
+  user    User @relation("UserManagers", fields: [userId], references: [id], onDelete: Cascade)
+  manager User @relation("ManagerUsers", fields: [managerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, managerId])
+}
+
+model Task {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  status      String   @default("todo") // "todo" | "in-progress" | "review" | "completed"
+  priority    String   @default("medium") // "low" | "medium" | "high" | "urgent"
+  dueDate     DateTime?
+  
+  // 🔹 Assigned to user
+  assignedToId String? @db.ObjectId
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  
+  // 🔹 Created by manager
+  createdById String? @db.ObjectId
+  createdBy   User?   @relation("CreatedTasks", fields: [createdById], references: [id])
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Task {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  status      String // "pending" | "in-progress" | "done"
-
-  // 🔹 Assigned to user
-  assignedToId String? @db.ObjectId
-  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
-}
-
+// ... rest of your models remain the same
 model Leave {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   reason    String

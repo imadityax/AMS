@@ -25,7 +25,7 @@ export default async function ManagerDashboard() {
             },
             take: 1
           },
-          assignedTasks: {
+          tasks: {
             where: {
               status: 'PENDING'
             }
@@ -60,7 +60,7 @@ export default async function ManagerDashboard() {
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold text-gray-700">Pending Tasks</h3>
           <p className="text-3xl font-bold text-orange-600">
-            {employees.reduce((acc, emp) => acc + emp.assignedTasks.length, 0)}
+            {employees.reduce((acc, emp) => acc + emp.tasks.length, 0)}
           </p>
         </div>
       </div>
@@ -110,8 +110,8 @@ export default async function ManagerDashboard() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${todayAttendance?.checkIn
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
                         }`}>
                         {todayAttendance?.checkIn ? 'Present' : 'Absent'}
                       </span>
@@ -127,7 +127,7 @@ export default async function ManagerDashboard() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
-                        {employee.assignedTasks.length} tasks
+                        {employee.tasks.length} tasks
                       </span>
                     </td>
                   </tr>
@@ -147,12 +147,6 @@ export default async function ManagerDashboard() {
             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
           >
             Assign New Task
-          </Link>
-          <Link
-            href="/manager/assigned-task"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-          >
-            Assigned Task
           </Link>
           <Link
             href="/manager/attendance"

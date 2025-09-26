@@ -28,7 +28,7 @@ export default async function ManagerEmployeesPage() {
         orderBy: { checkIn: 'desc' },
         take: 1
       },
-      assignedTasks: {
+      tasks: {
         where: { 
           OR: [
             { status: 'pending' },
@@ -76,7 +76,7 @@ export default async function ManagerEmployeesPage() {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-700">Pending Tasks</h3>
           <p className="text-3xl font-bold text-orange-600">
-            {employees.reduce((acc, emp) => acc + emp.assignedTasks.length, 0)}
+            {employees.reduce((acc, emp) => acc + emp.tasks.length, 0)}
           </p>
         </div>
         
@@ -109,7 +109,7 @@ export default async function ManagerEmployeesPage() {
             <tbody className="divide-y divide-gray-200">
               {employees.map((employee) => {
                 const todayAttendance = employee.attendances[0];
-                const activeTasks = employee.assignedTasks.length;
+                const activeTasks = employee.tasks.length;
                 const pendingLeaves = employee.leaves.length;
 
                 return (

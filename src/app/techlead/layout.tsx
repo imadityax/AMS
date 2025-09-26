@@ -29,7 +29,7 @@ function ManagerHeader() {
   return (
     <header className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <h1 className="text-2xl font-bold text-gray-900">Manager Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">TechLead Dashboard</h1>
       </div>
     </header>
   );
@@ -41,27 +41,22 @@ function ManagerSidebar() {
       <nav className="p-6">
         <ul className="space-y-4">
           <li>
-            <a href="/manager" className="text-gray-700 hover:text-blue-600 font-medium">
+            <a href="/techlead" className="text-gray-700 hover:text-blue-600 font-medium">
               Dashboard
             </a>
           </li>
           <li>
-            <a href="/manager/employees" className="text-gray-700 hover:text-blue-600 font-medium">
+            <a href="/techlead/employees" className="text-gray-700 hover:text-blue-600 font-medium">
               My Employees
             </a>
           </li>
           <li>
-            <a href="/manager/assign-task" className="text-gray-700 hover:text-blue-600 font-medium">
+            <a href="/techlead/assign-task" className="text-gray-700 hover:text-blue-600 font-medium">
               Assign Task
             </a>
           </li>
           <li>
-            <a href="/manager/assigned-task" className="text-gray-700 hover:text-blue-600 font-medium">
-              Assigned Task
-            </a>
-          </li>
-          <li>
-            <a href="/manager/attendance" className="text-gray-700 hover:text-blue-600 font-medium">
+            <a href="/techlead/attendance" className="text-gray-700 hover:text-blue-600 font-medium">
               Attendance
             </a>
           </li>

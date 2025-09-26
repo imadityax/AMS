@@ -1,7 +1,7 @@
 // src/app/tasks/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Task {
   id: string;
@@ -19,91 +19,62 @@ interface Task {
   createdAt: string;
 }
 
-// Mock data for demonstration
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Update quarterly financial report',
-    description: 'Review and update the Q2 financial report with the latest revenue numbers and projections.',
-    assigner: {
-      id: '101',
-      name: 'Sarah Johnson',
-      avatar: 'SJ',
-      department: 'Finance'
-    },
-    dueDate: '2023-07-15',
-    priority: 'high',
-    status: 'todo',
-    createdAt: '2023-07-05'
-  },
-  {
-    id: '2',
-    title: 'Design new landing page',
-    description: 'Create wireframes and mockups for the new product landing page based on the requirements document.',
-    assigner: {
-      id: '102',
-      name: 'Michael Chen',
-      avatar: 'MC',
-      department: 'Design'
-    },
-    dueDate: '2023-07-20',
-    priority: 'medium',
-    status: 'in-progress',
-    createdAt: '2023-07-01'
-  },
-  {
-    id: '3',
-    title: 'Fix authentication bug',
-    description: 'Investigate and fix the bug causing intermittent authentication failures on mobile devices.',
-    assigner: {
-      id: '103',
-      name: 'David Wilson',
-      avatar: 'DW',
-      department: 'Engineering'
-    },
-    dueDate: '2023-07-10',
-    priority: 'urgent',
-    status: 'review',
-    createdAt: '2023-07-03'
-  },
-  {
-    id: '4',
-    title: 'Prepare client presentation',
-    description: 'Prepare slides and talking points for the upcoming client meeting on July 25th.',
-    assigner: {
-      id: '104',
-      name: 'Emily Rodriguez',
-      avatar: 'ER',
-      department: 'Sales'
-    },
-    dueDate: '2023-07-18',
-    priority: 'high',
-    status: 'completed',
-    createdAt: '2023-06-28'
-  },
-  {
-    id: '5',
-    title: 'Onboard new team members',
-    description: 'Schedule and conduct onboarding sessions for the three new team members joining next week.',
-    assigner: {
-      id: '105',
-      name: 'James Thompson',
-      avatar: 'JT',
-      department: 'HR'
-    },
-    dueDate: '2023-07-12',
-    priority: 'medium',
-    status: 'todo',
-    createdAt: '2023-07-02'
-  }
-];
-
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [filter, setFilter] = useState<'all' | 'todo' | 'in-progress' | 'review' | 'completed'>('all');
   const [sortBy, setSortBy] = useState<'dueDate' | 'priority' | 'created'>('dueDate');
   const [updateModal, setUpdateModal] = useState<{isOpen: boolean; task: Task | null}>({isOpen: false, task: null});
   const [selectedStatus, setSelectedStatus] = useState<string>('');
+
+  // ✅ Fetch tasks from API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/tasks');
+        if (!res.ok) throw new Error('Failed to fetch tasks');
+        const data = await res.json();
+        setTasks(data);
+      } catch (err: any) {
+        setError(err.message || 'Something went wrong');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
+  // ✅ Update status in DB
+  const handleStatusUpdate = async () => {
+    if (updateModal.task && selectedStatus) {
+      try {
+        const res = await fetch(`/api/tasks/${updateModal.task.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: selectedStatus }),
+        });
+
+        if (!res.ok) throw new Error('Failed to update task');
+
+        // Update local state after DB success
+        setTasks(prev =>
+          prev.map(task =>
+            task.id === updateModal.task?.id
+              ? { ...task, status: selectedStatus as Task['status'] }
+              : task
+          )
+        );
+
+        setUpdateModal({ isOpen: false, task: null });
+      } catch (err: any) {
+        alert(err.message || 'Error updating task');
+      }
+    }
+  };
 
   const filteredTasks = tasks.filter(task => 
     filter === 'all' ? true : task.status === filter
@@ -154,19 +125,6 @@ export default function TasksPage() {
     setSelectedStatus(task.status);
   };
 
-  const handleStatusUpdate = () => {
-    if (updateModal.task && selectedStatus) {
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task.id === updateModal.task?.id 
-            ? {...task, status: selectedStatus as Task['status']} 
-            : task
-        )
-      );
-      setUpdateModal({isOpen: false, task: null});
-    }
-  };
-
   const getNextStatusOptions = (currentStatus: string) => {
     switch (currentStatus) {
       case 'todo':
@@ -187,6 +145,9 @@ export default function TasksPage() {
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
   };
+
+  if (loading) return <p className="p-8 text-center">Loading tasks...</p>;
+  if (error) return <p className="p-8 text-center text-red-500">{error}</p>;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
